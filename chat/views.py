@@ -73,7 +73,13 @@ class Logout(View):
 class Home(View):
     def get(self, request):
         if request.user.is_authenticated:
-            return render(request, 'chat/home.html')
+
+            users = User.objects.all()
+            context = {
+                'user': request.user,
+                'users': users,
+            }
+            return render(request, 'chat/home.html',context=context)
 
         return redirect('main')
 
