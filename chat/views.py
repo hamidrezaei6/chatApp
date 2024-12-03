@@ -8,7 +8,6 @@ from django.contrib.auth.models import User
 
 class Main(View):
     def get(self, request):
-
         if request.user.is_authenticated:
             return redirect('home')
         return render(request, 'chat/main.html')
@@ -18,7 +17,7 @@ class Login(View):
     def get(self, request):
         return render(request, 'chat/login.html')
 
-    def post(self,request):
+    def post(self, request):
         data = request.POST.dict()
         username = data.get('username')
         password = data.get('password')
@@ -28,8 +27,8 @@ class Login(View):
             login(request=request, user=user)
             return redirect('home')
 
-        context = {'error':'somethings went wrong'}
-        return render(request, 'chat/login.html',context=context)
+        context = {'error': 'somethings went wrong'}
+        return render(request, 'chat/login.html', context=context)
 
 
 class Register(View):
@@ -73,17 +72,23 @@ class Logout(View):
 class Home(View):
     def get(self, request):
         if request.user.is_authenticated:
-
             users = User.objects.all()
             context = {
                 'user': request.user,
                 'users': users,
             }
-            return render(request, 'chat/home.html',context=context)
+            return render(request, 'chat/home.html', context=context)
 
         return redirect('main')
 
 
 class ChatPerson(View):
-    def get(self, request):
-        return render(request, 'chat/chat_person.html')
+    def get(self, request, id):
+        person = User.objects.get(id=id)
+        me = request.user
+
+        context = {
+            "person": person,
+            "me": me,
+        }
+        return render(request, 'chat/chat_person.html', context=context)

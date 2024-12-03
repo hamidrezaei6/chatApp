@@ -268,9 +268,9 @@
     </a>
     <div>
         <img src="{% static 'chat/face.png' %}">
-        <p>person's name</p>
+        <p>{{ person.first_name }} {{ person.last_name }}</p>
     </div>
-    <p class="name-of-sender">Me : the user's name</p>
+    <p class="name-of-sender">Me : {{ me.first_name }} {{ me.last_name }}</p>
 </header>
 
 <main id="messages-area">

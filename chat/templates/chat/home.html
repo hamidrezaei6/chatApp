@@ -93,7 +93,7 @@
 
 <header>
     <p>Username : {{ user.username }}</p>
-    <p>Name : {{ person.first_name }} {{ person.last_name }}</p>
+    <p>Name : {{ user.first_name }} {{ user.last_name }}</p>
     <a href="{% url 'logout' %}">
         <button>Logout</button>
     </a>
@@ -102,7 +102,7 @@
 <main>
 
     {% for person in users %}
-        <a href="">
+        <a href="/chat_person/{{ person.id }}" >
             <section>
                 <img src="{% static 'chat/face.png' %}">
                 <p>{{ person.first_name }} {{ person.last_name }}</p>
