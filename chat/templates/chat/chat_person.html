@@ -306,7 +306,8 @@
     </footer>
 
     <script>
-        const url = 'ws://localhost:8000/websocket/';
+        const person_id = {{ person.id }};
+        const url = `ws://localhost:8004/websocket/${person_id}`;
         const chat_websocket = new WebSocket(url);
         
         const messages_area = document.getElementById("messages-area");
