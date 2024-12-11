@@ -11,3 +11,7 @@ class Message(models.Model):
     date = models.DateField(null=True)
     time = models.TimeField(null=True)
     has_been_seen = models.BooleanField(null=True,default=False)
+
+class UserChannel(models.Model):
+    user = models.ForeignKey(User,on_delete=models.PROTECT,default=None)
+    channel_name = models.TextField()

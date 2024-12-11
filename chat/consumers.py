@@ -4,16 +4,28 @@ import json
 from . import models
 from django.contrib.auth.models import User
 
+
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
-        print(self.channel_name)
+
+        try:
+            user_channel = models.UserChannel.objects.get(user=self.scope.get('user'))
+            user_channel.channel_name = self.channel_name
+            user_channel.save()
+
+        except:
+            user_channel = models.UserChannel()
+            user_channel.user = self.scope.get('user')
+            user_channel.channel_name = self.channel_name
+            user_channel.save()
+
+
 
         self.person_id = self.scope.get('url_route').get('kwargs').get('id')
 
     def receive(self, text_data):
         text_data = json.loads(text_data)
-
 
         new_message = models.Message()
         new_message.from_who = self.scope.get('user')
@@ -25,11 +37,12 @@ class ChatConsumer(WebsocketConsumer):
         new_message.save()
 
         data = {
-            'type':'receiver_function',
-            'type_of_data' : 'new_message',
+            'type': 'receiver_function',
+            'type_of_data': 'new_message',
             'data': text_data.get('message')
         }
 
-        async_to_sync(self.channel_layer.send)('name_channel',data)
+        async_to_sync(self.channel_layer.send)('name_channel', data)
+
     def receiver_function(self, the_data_that_will_come_from_layer):
         print(the_data_that_will_come_from_layer)
