@@ -27,6 +27,8 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data = json.loads(text_data)
 
+        other_user = User.objects.get(id=self.person_id)
+
         new_message = models.Message()
         new_message.from_who = self.scope.get('user')
         new_message.to_who = User.objects.get(id=self.person_id)
@@ -36,13 +38,18 @@ class ChatConsumer(WebsocketConsumer):
         new_message.has_been_seen = False
         new_message.save()
 
-        data = {
-            'type': 'receiver_function',
-            'type_of_data': 'new_message',
-            'data': text_data.get('message')
-        }
+        try:
+            user_channel_name = models.UserChannel.objects.get(user=other_user)
+            data = {
+                'type': 'receiver_function',
+                'type_of_data': 'new_message',
+                'data': text_data.get('message')
+            }
 
-        async_to_sync(self.channel_layer.send)('name_channel', data)
+            async_to_sync(self.channel_layer.send)(user_channel_name.channel_name, data)
+        except:
+            pass
 
     def receiver_function(self, the_data_that_will_come_from_layer):
-        print(the_data_that_will_come_from_layer)
+        data = json.dumps(the_data_that_will_come_from_layer)
+        self.send(data)
