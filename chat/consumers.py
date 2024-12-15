@@ -3,7 +3,7 @@ from asgiref.sync import async_to_sync
 import json
 from . import models
 from django.contrib.auth.models import User
-
+import datetime
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
@@ -29,12 +29,17 @@ class ChatConsumer(WebsocketConsumer):
 
         other_user = User.objects.get(id=self.person_id)
 
+        now = datetime.datetime.now()
+        date = now.date()
+        time = now.time()
+
+
         new_message = models.Message()
         new_message.from_who = self.scope.get('user')
         new_message.to_who = User.objects.get(id=self.person_id)
         new_message.message = text_data.get('message')
-        new_message.date = '2024-12-15'
-        new_message.time = '20:12:10'
+        new_message.date = date
+        new_message.time = time
         new_message.has_been_seen = False
         new_message.save()
 

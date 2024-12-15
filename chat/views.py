@@ -89,7 +89,7 @@ class ChatPerson(View):
         person = User.objects.get(id=id)
         me = request.user
 
-        messages = models.Message.objects.filter(Q(from_who=me, to_who=person) | Q(to_who=me, from_who=person))
+        messages = models.Message.objects.filter(Q(from_who=me, to_who=person) | Q(to_who=me, from_who=person)).order_by('date','time')
 
         context = {
             "person": person,
