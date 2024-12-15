@@ -274,48 +274,57 @@
 </header>
 
 <main id="messages-area">
-    <section class="to">
-        <div class="details">
-            <p>2024-01-30</p>
-            <div class="status">
-                <div></div>
-                <div></div>
-            </div>
-            <p>10:55:02</p>
-        </div>
-        <div class="message">
-            <p style="overflow-wrap: anywhere;">Message from you</p>
-        </div>
-    </section>
 
-    <section class="from">
-        <div class="details">
-            <p>2024-01-30</p>
-            <p>10:55:02</p>
-        </div>
-        <div class="message">
-            <p style="overflow-wrap: anywhere;">Message from the other</p>
-        </div>
-    </section>
+    {% for message in messages %}
+        {% if message.from_who == me %}
+            <section class="to">
+                <div class="details">
+                    <p>{{ message.date }}</p>
+                    <div class="status">
+                        <div></div>
+                        <div></div>
+                    </div>
+                    <p>{{ message.time }}</p>
+                </div>
+                <div class="message">
+                    <p style="overflow-wrap: anywhere;">{{ message.message }}</p>
+                </div>
+            </section>
+
+        {% elif message.from_who == person %}
+            <section class="from">
+                <div class="details">
+                    <p>{{ message.date }}</p>
+                    <p>{{ message.time }}</p>
+                </div>
+                <div class="message">
+                    <p style="overflow-wrap: anywhere;">{{ message.message }}</p>
+                </div>
+            </section>
+        {% endif %}
+
+    {% endfor %}
+
+
 </main>
 
-    <footer>
+<footer>
         <textarea name="text" oninput="this.style.height = ''; this.style.height = this.scrollHeight +'px'"
                   id="the-message-to-send"></textarea>
-        <button id="send-message-button">Send</button>
-    </footer>
+    <button id="send-message-button">Send</button>
+</footer>
 
-    <script>
-        const person_id = {{ person.id }};
-        const url = `ws://localhost:8004/websocket/${person_id}`;
-        const chat_websocket = new WebSocket(url);
-        
-        const messages_area = document.getElementById("messages-area");
-        const text_area = document.getElementById("the-message-to-send");
-        const send_button = document.getElementById("send-message-button");
-        send_button.addEventListener('click', function () {
-            chat_websocket.send(`{ "type" : "new_message" , "message" : "${text_area.value}"}`); 
-            messages_area.insertAdjacentHTML('beforeend',`<section class="to">
+<script>
+    const person_id = {{ person.id }};
+    const url = `ws://localhost:8004/websocket/${person_id}`;
+    const chat_websocket = new WebSocket(url);
+
+    const messages_area = document.getElementById("messages-area");
+    const text_area = document.getElementById("the-message-to-send");
+    const send_button = document.getElementById("send-message-button");
+    send_button.addEventListener('click', function () {
+        chat_websocket.send(`{ "type" : "new_message" , "message" : "${text_area.value}"}`);
+        messages_area.insertAdjacentHTML('beforeend', `<section class="to">
         <div class="details">
             <p>2024-01-30</p>
             <div class="status">
@@ -328,15 +337,15 @@
             <p style="overflow-wrap: anywhere;">${text_area.value}</p>
         </div>
     </section>`);
-            text_area.value = "";
-        });
+        text_area.value = "";
+    });
 
 
-        chat_websocket.onmessage = function (event) {
-            const received_data = JSON.parse(event.data)
-            
-            if(received_data.type_of_data == 'new_message'){
-                messages_area.insertAdjacentHTML('beforeend',`    <section class="from">
+    chat_websocket.onmessage = function (event) {
+        const received_data = JSON.parse(event.data)
+
+        if (received_data.type_of_data == 'new_message') {
+            messages_area.insertAdjacentHTML('beforeend', `    <section class="from">
         <div class="details">
             <p>2024-01-30</p>
             <p>10:55:02</p>
@@ -345,9 +354,9 @@
             <p style="overflow-wrap: anywhere;">${received_data.data}</p>
         </div>
     </section>`)
-            }
-        };
+        }
+    };
 
-    </script>
+</script>
 </body>
 </html>

@@ -4,6 +4,8 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from . import models
+from django.db.models import Q
 
 
 class Main(View):
@@ -87,8 +89,11 @@ class ChatPerson(View):
         person = User.objects.get(id=id)
         me = request.user
 
+        messages = models.Message.objects.filter(Q(from_who=me, to_who=person) | Q(to_who=me, from_who=person))
+
         context = {
             "person": person,
             "me": me,
+            'messages':messages,
         }
         return render(request, 'chat/chat_person.html', context=context)
