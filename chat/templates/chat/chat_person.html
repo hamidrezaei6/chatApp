@@ -339,21 +339,26 @@
     </section>`);
         text_area.value = "";
     });
-
-
+    
     chat_websocket.onmessage = function (event) {
         const received_data = JSON.parse(event.data)
-
-        if (received_data.type_of_data == 'new_message') {
-            messages_area.insertAdjacentHTML('beforeend', `    <section class="from">
-        <div class="details">
-            <p>2024-01-30</p>
-            <p>10:55:02</p>
-        </div>
-        <div class="message">
-            <p style="overflow-wrap: anywhere;">${received_data.data}</p>
-        </div>
-    </section>`)
+        if (received_data.type_of_data == "new_message"){
+            messages_area.insertAdjacentHTML("beforeend", `<section class="from">
+                <div class="details">
+                    <p>2024-01-30</p>
+                    <p>10:55:02</p>
+                </div>
+                <div class="message">
+                    <p style="overflow-wrap: anywhere;">${received_data.data}</p>
+                </div>
+            </section>`)
+            chat_websocket.send(`{"type":"i_have_seen_the_messages"}`);
+        } 
+        else if(received_data.type_of_data == "the_messages_has_been_seen_from_the_other") {
+            const my_messages = document.getElementsByClassName("status")
+            for (let i=0; my_messages.length > i; i++) {
+                my_messages[i].classList.add("seen")
+            }
         }
     };
 
