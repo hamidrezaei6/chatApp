@@ -280,10 +280,17 @@
             <section class="to">
                 <div class="details">
                     <p>{{ message.date }}</p>
+                    {% if message.has_been_seen %}
+                        <div class="status seen">
+                            <div></div>
+                            <div></div>
+                        </div>
+                    {% else %}
                     <div class="status">
                         <div></div>
                         <div></div>
                     </div>
+                    {% endif %}
                     <p>{{ message.time }}</p>
                 </div>
                 <div class="message">
@@ -339,10 +346,10 @@
     </section>`);
         text_area.value = "";
     });
-    
+
     chat_websocket.onmessage = function (event) {
         const received_data = JSON.parse(event.data)
-        if (received_data.type_of_data == "new_message"){
+        if (received_data.type_of_data == "new_message") {
             messages_area.insertAdjacentHTML("beforeend", `<section class="from">
                 <div class="details">
                     <p>2024-01-30</p>
@@ -353,10 +360,9 @@
                 </div>
             </section>`)
             chat_websocket.send(`{"type":"i_have_seen_the_messages"}`);
-        } 
-        else if(received_data.type_of_data == "the_messages_has_been_seen_from_the_other") {
+        } else if (received_data.type_of_data == "the_messages_have_been_seen_from_the_other") {
             const my_messages = document.getElementsByClassName("status")
-            for (let i=0; my_messages.length > i; i++) {
+            for (let i = 0; my_messages.length > i; i++) {
                 my_messages[i].classList.add("seen")
             }
         }

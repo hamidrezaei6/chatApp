@@ -53,9 +53,12 @@ class ChatConsumer(WebsocketConsumer):
                 user_channel_name = models.UserChannel.objects.get(user=other_user)
                 data = {
                     'type': 'receiver_function',
-                    'type_of_data': "the_messages_has_been_seen_from_the_other"
+                    'type_of_data': "the_messages_have_been_seen_from_the_other"
                 }
                 async_to_sync(self.channel_layer.send)(user_channel_name.channel_name, data)
+
+                messages_have_not_been_seen = models.Message.objects.filter(from_who=other_user,to_who=self.scope.get('user'))
+                messages_have_not_been_seen.update(has_been_seen=True)
             except:
                 pass
 
